@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ragnarök - Updates</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <canvas id="pulse-canvas"></canvas>
+    
+    <div class="overlay">
+        <header>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="personnel.html">Personnel</a></li>
+                    <li><a href="updates.html" class="active">Updates</a></li>
+                    <li><a href="project-description.html">Project Description</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <section class="page-header">
+                <h1>Project Updates</h1>
+                <p>Progress updates on Ragnarök: the Severance of Body and Mind - a visual metaphor for the fracture between body and mind during mental illness</p>
+            </section>
+
+            <section class="updates-timeline">
+                <div class="update-item">
+                    <div class="update-date">February 2026</div>
+                    <h3>Build Lead Confirmed</h3>
+                    <p>Brian Gonzales officially confirmed as Build Lead for Ragnarök. With extensive experience from Mona Camp's previous projects including Die! Die! Die!, Brian brings critical expertise in structural planning and on-site assembly.</p>
+                    <div class="update-tags">
+                        <span class="tag">Team</span>
+                        <span class="tag">Construction</span>
+                    </div>
+                </div>
+
+
+
+
+                <div class="update-item">
+                    <div class="update-date">January 29, 2026</div>
+                    <h3>Full Proposal Submitted to Burning Man</h3>
+                    <p>Ragnarök full proposal officially submitted to Burning Man Art Department for consideration. The comprehensive application includes technical specifications, budget, timeline, and detailed project documentation for 2026 event.</p>
+                    <div class="update-tags">
+                        <span class="tag">Submission</span>
+                        <span class="tag">Burning Man</span>
+                    </div>
+                </div>
+
+                <div class="update-item">
+                    <div class="update-date">Friday, January 2026</div>
+                    <h3>Invited to Submit Full Burning Man Proposal</h3>
+                    <p>Ragnarök project was invited by Burning Man Art Department to submit a full proposal application for 2026 event. This recognition marks significant progress toward bringing the installation to Black Rock City.</p>
+                    <div class="update-tags">
+                        <span class="tag">Recognition</span>
+                        <span class="tag">Burning Man</span>
+                    </div>
+                </div>
+
+                <div class="update-item">
+                    <div class="update-date">November 13, 2025</div>
+                    <h3>Honoraria Submission & Crowdfunding Launch</h3>
+                    <p>Ragnarök: the Severance of Body and Mind officially submitted to Burning Man Honoraria program. Simultaneously launched crowdfunding campaign to support the project's development and construction.</p>
+                    <p><a href="https://crowdfundr.com/52eezf?ref=ab_296vYFGMujN296vYFGMujN" target="_blank" class="crowdfund-link">Support Ragnarök on Crowdfundr</a></p>
+                    <div class="update-tags">
+                        <span class="tag">Honoraria</span>
+                        <span class="tag">Funding</span>
+                        <span class="tag">Burning Man</span>
+                    </div>
+                </div>
+
+                <div class="update-item">
+                    <div class="update-date">October 2025</div>
+                    <h3>Mona Camp Partnership</h3>
+                    <p>Official partnership established with Mona Camp for Ragnarök installation. Helen Yu's concept for exploring mental illness through geometric metaphor moves into development phase.</p>
+                    <div class="update-tags">
+                        <span class="tag">Launch</span>
+                        <span class="tag">Partnership</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="upcoming">
+                <h2>Upcoming Milestones</h2>
+                <ul>
+                    <li>February-March 2026: Burning Man proposal review and decision</li>
+                    <li>March 2026: Prototype construction and testing</li>
+                    <li>April 2026: Interactive system integration</li>
+                    <li>May-August 2026: Final build and assembly</li>
+                    <li>August 2026: Burning Man 2026 installation</li>
+                    <li>Ongoing: Crowdfunding campaign and fundraising</li>
+                </ul>
+                <p style="text-align: center; margin-top: 2rem;">
+                    <a href="https://crowdfundr.com/52eezf?ref=sh_2Ed8We_ab_296vYFGMujN296vYFGMujN" target="_blank" class="crowdfund-link">
+                        Support Our Project on Crowdfundr
+                    </a>
+                </p>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Helen Yu & Mona Camp. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <div class="pulse-counter">
+        <div>Active Pulses</div>
+        <div class="count" id="pulseCount">0</div>
+    </div>
+    
+    <div class="controls">
+        <button class="control-btn" id="autoBtn">Auto Pulse</button>
+        <button class="control-btn active" id="trailBtn">Trails</button>
+        <button class="control-btn" id="clearBtn">Clear</button>
+    </div>
+
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/"
+      }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+        import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+        const config = {
+            autoPulse: false,
+            trails: true,
+            pulseSpeed: 25,
+            maxPulses: 8,
+            colors: [
+                new THREE.Color(0x00ffff), // Cyan
+                new THREE.Color(0xff00ff), // Magenta  
+                new THREE.Color(0xffff00), // Yellow
+                new THREE.Color(0x00ff00), // Green
+                new THREE.Color(0xff8800), // Orange
+                new THREE.Color(0x8800ff)  // Purple
+            ]
+        };
+
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x000000, 0.003);
+        
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 50;
+        
+        const canvasElement = document.getElementById('pulse-canvas');
+        const renderer = new THREE.WebGLRenderer({ 
+            canvas: canvasElement, 
+            antialias: true, 
+            powerPreference: "high-performance" 
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setClearColor(0x000000);
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+        // Post-processing
+        const composer = new EffectComposer(renderer);
+        composer.addPass(new RenderPass(scene, camera));
+        const bloomPass = new UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight), 
+            1.5, 0.4, 0.85
+        );
+        composer.addPass(bloomPass);
+        composer.addPass(new OutputPass());
+
+        // Background particles
+        const bgParticles = new THREE.Points(
+            new THREE.BufferGeometry().setAttribute(
+                'position', 
+                new THREE.Float32BufferAttribute(
+                    Array.from({length: 3000}, () => THREE.MathUtils.randFloatSpread(200)), 
+                    3
+                )
+            ),
+            new THREE.PointsMaterial({ 
+                color: 0xffffff, 
+                size: 0.1, 
+                sizeAttenuation: true, 
+                depthWrite: false, 
+                opacity: 0.6, 
+                transparent: true 
+            })
+        );
+        scene.add(bgParticles);
+
+        // Pulse system
+        class PulseSystem {
+            constructor() {
+                this.pulses = [];
+                this.pulseGeometry = new THREE.BufferGeometry();
+                this.pulseMeshes = [];
+                this.lastAutoPulse = 0;
+                this.init();
+            }
+
+            init() {
+                for (let i = 0; i < config.maxPulses; i++) {
+                    const geometry = new THREE.RingGeometry(0.1, 0.2, 64);
+                    const material = new THREE.ShaderMaterial({
+                        uniforms: {
+                            uTime: { value: 0 },
+                            uColor: { value: config.colors[i % config.colors.length] },
+                            uOpacity: { value: 0 }
+                        },
+                        vertexShader: `
+                            varying vec2 vUv;
+                            void main() {
+                                vUv = uv;
+                                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                            }
+                        `,
+                        fragmentShader: `
+                            uniform float uTime;
+                            uniform vec3 uColor;
+                            uniform float uOpacity;
+                            varying vec2 vUv;
+                            
+                            void main() {
+                                float dist = distance(vUv, vec2(0.5));
+                                float ring = smoothstep(0.45, 0.48, dist) - smoothstep(0.48, 0.51, dist);
+                                ring *= sin(uTime * 10.0) * 0.5 + 0.5;
+                                
+                                vec3 color = uColor * ring;
+                                gl_FragColor = vec4(color, uOpacity * ring);
+                            }
+                        `,
+                        transparent: true,
+                        blending: THREE.AdditiveBlending,
+                        depthWrite: false
+                    });
+                    
+                    const mesh = new THREE.Mesh(geometry, material);
+                    mesh.visible = false;
+                    scene.add(mesh);
+                    this.pulseMeshes.push(mesh);
+                }
+            }
+
+            addPulse(x, y) {
+                const mesh = this.pulseMeshes[this.pulses.length % config.maxPulses];
+                if (!mesh) return;
+
+                const vector = new THREE.Vector3(
+                    (x / window.innerWidth) * 2 - 1,
+                    -(y / window.innerHeight) * 2 + 1,
+                    0.5
+                );
+                vector.unproject(camera);
+                const dir = vector.sub(camera.position).normalize();
+                const distance = -camera.position.z / dir.z;
+                const pos = camera.position.clone().add(dir.multiplyScalar(distance));
+                
+                mesh.position.copy(pos);
+                mesh.visible = true;
+                mesh.material.uniforms.uTime.value = 0;
+                mesh.material.uniforms.uOpacity.value = 1;
+                
+                this.pulses.push({
+                    mesh,
+                    startTime: Date.now(),
+                    duration: 3000
+                });
+
+                this.updateCounter();
+            }
+
+            update(deltaTime) {
+                const now = Date.now();
+                
+                this.pulses = this.pulses.filter(pulse => {
+                    const age = now - pulse.startTime;
+                    const progress = age / pulse.duration;
+                    
+                    if (progress >= 1) {
+                        pulse.mesh.visible = false;
+                        return false;
+                    }
+                    
+                    const scale = 1 + progress * 15;
+                    pulse.mesh.scale.set(scale, scale, scale);
+                    pulse.mesh.material.uniforms.uTime.value = progress * 10;
+                    pulse.mesh.material.uniforms.uOpacity.value = (1 - progress) * 0.8;
+                    
+                    return true;
+                });
+
+                if (config.autoPulse && now - this.lastAutoPulse > 500) {
+                    const x = Math.random() * window.innerWidth;
+                    const y = Math.random() * window.innerHeight;
+                    this.addPulse(x, y);
+                    this.lastAutoPulse = now;
+                }
+
+                this.updateCounter();
+            }
+
+            clear() {
+                this.pulses.forEach(pulse => {
+                    pulse.mesh.visible = false;
+                });
+                this.pulses = [];
+                this.updateCounter();
+            }
+
+            updateCounter() {
+                document.getElementById('pulseCount').textContent = this.pulses.length;
+            }
+        }
+
+        const pulseSystem = new PulseSystem();
+        const clock = new THREE.Clock();
+
+        // Event listeners
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.controls') || e.target.closest('nav') || e.target.closest('main') || e.target.closest('footer')) return;
+            pulseSystem.addPulse(e.clientX, e.clientY);
+        });
+
+        document.addEventListener('touchstart', (e) => {
+            if (e.target.closest('.controls') || e.target.closest('nav') || e.target.closest('main') || e.target.closest('footer')) return;
+            e.preventDefault();
+            if (e.touches.length > 0) {
+                pulseSystem.addPulse(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: false });
+
+        document.getElementById('autoBtn').addEventListener('click', function() {
+            config.autoPulse = !config.autoPulse;
+            this.classList.toggle('active');
+            this.textContent = config.autoPulse ? 'Stop Auto' : 'Auto Pulse';
+        });
+
+        document.getElementById('trailBtn').addEventListener('click', function() {
+            config.trails = !config.trails;
+            this.classList.toggle('active');
+            renderer.autoClear = !config.trails;
+        });
+
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            pulseSystem.clear();
+        });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const deltaTime = clock.getDelta();
+            
+            pulseSystem.update(deltaTime);
+            
+            bgParticles.rotation.y += 0.0002;
+            bgParticles.rotation.x += 0.0001;
+            
+            composer.render();
+        }
+
+        animate();
+    </script>
+</body>
+</html>
