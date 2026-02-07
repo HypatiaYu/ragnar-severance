@@ -4,23 +4,469 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ragnarök - Project Description</title>
-    <link rel="stylesheet" href="styles.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            cursor: crosshair;
+        }
+
+        /* Fractal Background Canvas */
+        #fractalCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.4;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00, #ff00ff);
+            background-size: 300% 300%;
+            animation: psychedelic-nav 4s ease infinite;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes psychedelic-nav {
+            0%, 100% { background-position: 0% 50%; }
+            25% { background-position: 100% 50%; }
+            50% { background-position: 100% 100%; }
+            75% { background-position: 0% 100%; }
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: rgba(255, 255, 255, 0.15);
+            -webkit-text-fill-color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Main Container */
+        .overlay {
+            position: relative;
+            z-index: 2;
+            pointer-events: none;
+            min-height: 100vh;
+        }
+
+        .overlay > * {
+            pointer-events: auto;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 150px 50px 50px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Page Header */
+        .page-header {
+            text-align: center;
+            padding: 6rem 2rem 3rem;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle, rgba(255, 0, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse-glow 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        .page-header h1 {
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            margin-bottom: 1rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            z-index: 2;
+        }
+
+        .page-header p {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            opacity: 0.8;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Section styling */
+        section {
+            padding: 3rem 0;
+            margin-bottom: 3rem;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.5), transparent);
+            animation: slide-glow 3s linear infinite;
+        }
+
+        @keyframes slide-glow {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        section h2 {
+            color: #fff;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            position: relative;
+            z-index: 2;
+        }
+
+        section h3 {
+            color: #fff;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        section p {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        /* Grid layouts */
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .spec-item {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .spec-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .spec-item:hover::before {
+            opacity: 1;
+        }
+
+        .spec-item:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 15px 40px rgba(0, 255, 255, 0.3);
+        }
+
+        .spec-item h3 {
+            color: #fff;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .spec-item p {
+            color: rgba(255, 255, 255, 0.7);
+            position: relative;
+            z-index: 2;
+        }
+
+        .spec-item ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .spec-item li {
+            padding: 0.5rem 0;
+            position: relative;
+            padding-left: 1.5rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .spec-item li::before {
+            content: "✓";
+            color: #00ff00;
+            position: absolute;
+            left: 0;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        /* Workflow steps */
+        .workflow-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 15px 40px rgba(0, 255, 255, 0.3);
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #8a2be2, #00ffff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+        }
+
+        .step h3 {
+            color: #fff;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .step p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+        }
+
+        /* Reference images */
+        .reference-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .reference-item {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .reference-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .reference-image {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .reference-image:hover {
+            transform: scale(1.02);
+        }
+
+        .reference-caption {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            line-height: 1.4;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .crowdfund-link {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, #8a2be2, #00ffff);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(138, 43, 226, 0.3);
+            margin: 2rem auto;
+            text-align: center;
+        }
+
+        .crowdfund-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(138, 43, 226, 0.5);
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Mobile Responsive */
+        .mobile-menu {
+            display: none;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            main {
+                padding: 100px 20px 20px;
+            }
+
+            .page-header {
+                padding: 4rem 1rem 2rem;
+            }
+
+            section {
+                padding: 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .specs-grid,
+            .workflow-steps,
+            .reference-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <canvas id="pulse-canvas"></canvas>
-    
-    <div class="overlay">
-        <header>
-            <nav>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="personnel.html">Personnel</a></li>
-                    <li><a href="updates.html">Updates</a></li>
-                    <li><a href="project-description.html" class="active">Project Description</a></li>
-                </ul>
-            </nav>
-        </header>
+    <!-- Fractal Background -->
+    <canvas id="fractalCanvas"></canvas>
 
+    <!-- Navigation -->
+    <nav class="nav">
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="personnel.html">Personnel</a></li>
+            <li><a href="updates.html">Updates</a></li>
+            <li><a href="project-description.html" class="active">Project Description</a></li>
+        </ul>
+        <div class="mobile-menu" onclick="toggleMobileMenu()">☰</div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="overlay">
         <main>
             <section class="page-header">
                 <h1>Project Description</h1>
@@ -166,273 +612,400 @@
         </footer>
     </div>
 
-    <div class="pulse-counter">
-        <div>Active Pulses</div>
-        <div class="count" id="pulseCount">0</div>
-    </div>
-    
-    <div class="controls">
-        <button class="control-btn" id="autoBtn">Auto Pulse</button>
-        <button class="control-btn active" id="trailBtn">Trails</button>
-        <button class="control-btn" id="clearBtn">Clear</button>
-    </div>
+    <script>
+        // Enhanced Fractal Background Animation with Multiple Fractal Shapes
+        const canvas = document.getElementById('fractalCanvas');
+        const ctx = canvas.getContext('2d');
 
-    <script type="importmap">
-    {
-      "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/"
-      }
-    }
-    </script>
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
 
-    <script type="module">
-        import * as THREE from 'three';
-        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-        import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+        // Sierpinski Triangle Implementation with Sinusoidal Warping Effects
+        function drawSierpinskiTriangle(ctx, x, y, size, depth, time, ratioOffset = 0) {
+            if (depth === 0) {
+                // Enhanced sinusoidal warping for dramatic distortion
+                const warpX = Math.sin(time * 1.8 + ratioOffset * 2) * 0.4;
+                const warpY = Math.cos(time * 1.3 + ratioOffset * 1.5) * 0.4;
+                const twist = Math.sin(time * 2.5 + ratioOffset) * 0.3;
+                const breathe = 1 + Math.sin(time * 0.7 + ratioOffset * 0.5) * 0.2;
+                
+                // Apply warping to each vertex
+                const v1x = x + Math.sin(time * 2 + ratioOffset) * size * 0.1;
+                const v1y = y + Math.cos(time * 1.5 + ratioOffset) * size * 0.1;
+                const v2x = x + size * breathe * (1 + warpX);
+                const v2y = y + Math.sin(time * 2.2 + ratioOffset) * size * 0.15;
+                const v3x = x + size/2 * breathe + twist * size;
+                const v3y = y - size * 0.866 * breathe * (1 + warpY) + Math.cos(time * 1.8 + ratioOffset) * size * 0.1;
+                
+                ctx.beginPath();
+                ctx.moveTo(v1x, v1y);
+                ctx.lineTo(v2x, v2y);
+                ctx.lineTo(v3x, v3y);
+                ctx.closePath();
+                
+                const hue = 280 + Math.sin(time + depth + ratioOffset) * 80;
+                const opacity = 0.1 + Math.sin(time * 1.5 + depth * 0.3 + ratioOffset) * 0.08;
+                ctx.fillStyle = `hsla(${hue}, 70%, 50%, ${opacity})`;
+                ctx.fill();
+                ctx.strokeStyle = `hsla(${hue}, 70%, 60%, ${opacity * 0.6})`;
+                ctx.stroke();
+                return;
+            }
+            
+            // Dynamic warping of subdivision positions
+            const subdivisionRatio = 0.5 + Math.sin(time * 1.7 + ratioOffset + depth * 0.5) * 0.15;
+            const halfSize = size * subdivisionRatio;
+            
+            // Apply wave distortion to each sub-triangle position
+            const wave1X = Math.sin(time * 2.3 + ratioOffset * 2) * size * 0.05;
+            const wave1Y = Math.cos(time * 1.9 + ratioOffset) * size * 0.05;
+            const wave2X = Math.sin(time * 2.1 + ratioOffset * 1.5 + 1) * size * 0.05;
+            const wave2Y = Math.cos(time * 2.0 + ratioOffset + 1) * size * 0.05;
+            const wave3X = Math.sin(time * 2.5 + ratioOffset * 1.8 + 2) * size * 0.05;
+            const wave3Y = Math.cos(time * 1.7 + ratioOffset * 1.3 + 2) * size * 0.05;
+            
+            drawSierpinskiTriangle(ctx, x + wave1X, y + wave1Y, halfSize, depth - 1, time, ratioOffset);
+            drawSierpinskiTriangle(ctx, x + halfSize + wave2X, y + wave2Y, halfSize, depth - 1, time, ratioOffset + 0.5);
+            drawSierpinskiTriangle(ctx, x + halfSize/2 + wave3X, y - halfSize * 0.866 + wave3Y, halfSize, depth - 1, time, ratioOffset + 1);
+        }
 
-        const config = {
-            autoPulse: false,
-            trails: true,
-            pulseSpeed: 25,
-            maxPulses: 8,
-            colors: [
-                new THREE.Color(0x00ffff), // Cyan
-                new THREE.Color(0xff00ff), // Magenta  
-                new THREE.Color(0xffff00), // Yellow
-                new THREE.Color(0x00ff00), // Green
-                new THREE.Color(0xff8800), // Orange
-                new THREE.Color(0x8800ff)  // Purple
-            ]
-        };
-
-        const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x000000, 0.003);
-        
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 50;
-        
-        const canvasElement = document.getElementById('pulse-canvas');
-        const renderer = new THREE.WebGLRenderer({ 
-            canvas: canvasElement, 
-            antialias: true, 
-            powerPreference: "high-performance" 
-        });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.setClearColor(0x000000);
-        renderer.outputColorSpace = THREE.SRGBColorSpace;
-
-        // Post-processing
-        const composer = new EffectComposer(renderer);
-        composer.addPass(new RenderPass(scene, camera));
-        const bloomPass = new UnrealBloomPass(
-            new THREE.Vector2(window.innerWidth, window.innerHeight), 
-            1.5, 0.4, 0.85
-        );
-        composer.addPass(bloomPass);
-        composer.addPass(new OutputPass());
-
-        // Background particles
-        const bgParticles = new THREE.Points(
-            new THREE.BufferGeometry().setAttribute(
-                'position', 
-                new THREE.Float32BufferAttribute(
-                    Array.from({length: 3000}, () => THREE.MathUtils.randFloatSpread(200)), 
-                    3
-                )
-            ),
-            new THREE.PointsMaterial({ 
-                color: 0xffffff, 
-                size: 0.1, 
-                sizeAttenuation: true, 
-                depthWrite: false, 
-                opacity: 0.6, 
-                transparent: true 
-            })
-        );
-        scene.add(bgParticles);
-
-        // Pulse system
-        class PulseSystem {
-            constructor() {
-                this.pulses = [];
-                this.pulseGeometry = new THREE.BufferGeometry();
-                this.pulseMeshes = [];
-                this.lastAutoPulse = 0;
-                this.init();
+        // Koch Snowflake Implementation with Enhanced Breathing Amplitude
+        function drawKochLine(ctx, x1, y1, x2, y2, depth, time, ratioOffset = 0) {
+            if (depth === 0) {
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+                return;
             }
 
-            init() {
-                for (let i = 0; i < config.maxPulses; i++) {
-                    const geometry = new THREE.RingGeometry(0.1, 0.2, 64);
-                    const material = new THREE.ShaderMaterial({
-                        uniforms: {
-                            uTime: { value: 0 },
-                            uColor: { value: config.colors[i % config.colors.length] },
-                            uOpacity: { value: 0 }
-                        },
-                        vertexShader: `
-                            varying vec2 vUv;
-                            void main() {
-                                vUv = uv;
-                                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                            }
-                        `,
-                        fragmentShader: `
-                            uniform float uTime;
-                            uniform vec3 uColor;
-                            uniform float uOpacity;
-                            varying vec2 vUv;
-                            
-                            void main() {
-                                float dist = distance(vUv, vec2(0.5));
-                                float ring = smoothstep(0.45, 0.48, dist) - smoothstep(0.48, 0.51, dist);
-                                ring *= sin(uTime * 10.0) * 0.5 + 0.5;
-                                
-                                vec3 color = uColor * ring;
-                                gl_FragColor = vec4(color, uOpacity * ring);
-                            }
-                        `,
-                        transparent: true,
-                        blending: THREE.AdditiveBlending,
-                        depthWrite: false
-                    });
-                    
-                    const mesh = new THREE.Mesh(geometry, material);
-                    mesh.visible = false;
-                    scene.add(mesh);
-                    this.pulseMeshes.push(mesh);
+            // Apply large amplitude breathing to line subdivision
+            const breatheScale = 1 + Math.sin(time * 0.8 + ratioOffset) * 0.6;
+            const subdivisionRatio = 0.33 + Math.sin(time * 2 + ratioOffset) * 0.25;
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+
+            const x3 = x1 + dx * subdivisionRatio * breatheScale;
+            const y3 = y1 + dy * subdivisionRatio * breatheScale;
+
+            const x4 = x1 + dx * (1 - subdivisionRatio);
+            const y4 = y1 + dy * (1 - subdivisionRatio);
+
+            // Large amplitude breathing to spike angle and size
+            const angleVariation = Math.PI / 3 + Math.sin(time * 1.2 + ratioOffset) * 0.8;
+            const angle = Math.atan2(dy, dx) - angleVariation;
+            const length = Math.sqrt(dx * dx + dy * dy) * subdivisionRatio * breatheScale;
+
+            const x5 = x3 + length * Math.cos(angle);
+            const y5 = y3 + length * Math.sin(angle);
+
+            drawKochLine(ctx, x1, y1, x3, y3, depth - 1, time, ratioOffset);
+            drawKochLine(ctx, x3, y3, x5, y5, depth - 1, time, ratioOffset + 0.3);
+            drawKochLine(ctx, x5, y5, x4, y4, depth - 1, time, ratioOffset + 0.6);
+            drawKochLine(ctx, x4, y4, x2, y2, depth - 1, time, ratioOffset + 0.9);
+        }
+
+        function drawKochSnowflake(ctx, centerX, centerY, size, depth, time, ratioOffset = 0) {
+            // Large amplitude breathing for entire snowflake
+            const breatheScale = 1 + Math.sin(time * 0.6 + ratioOffset) * 0.7;
+            const warpX = Math.sin(time * 1.5 + ratioOffset * 2) * 0.3;
+            const warpY = Math.cos(time * 1.3 + ratioOffset * 1.8) * 0.3;
+            
+            const adjustedSize = size * breatheScale;
+            const height = adjustedSize * 0.866;
+            const x1 = centerX - adjustedSize / 2 + warpX * size;
+            const y1 = centerY + height / 3 + warpY * size;
+            const x2 = centerX + adjustedSize / 2 + warpX * size;
+            const y2 = centerY + height / 3 + warpY * size;
+            const x3 = centerX + warpX * size * 0.5;
+            const y3 = centerY - 2 * height / 3 + warpY * size;
+
+            const hue = 180 + Math.sin(time * 0.7 + ratioOffset) * 80;
+            ctx.strokeStyle = `hsla(${hue}, 70%, 50%, ${0.3 + Math.sin(time * 1.2 + ratioOffset) * 0.2})`;
+            ctx.lineWidth = 1 + Math.sin(time * 2 + ratioOffset) * 1;
+
+            drawKochLine(ctx, x1, y1, x2, y2, depth, time, ratioOffset);
+            drawKochLine(ctx, x2, y2, x3, y3, depth, time, ratioOffset + 0.2);
+            drawKochLine(ctx, x3, y3, x1, y1, depth, time, ratioOffset + 0.4);
+        }
+
+        // Dragon Curve Fractal with Enhanced Breathing Amplitude
+        function drawDragonCurve(ctx, x1, y1, x2, y2, depth, hue, time, ratioOffset = 0) {
+            if (depth === 0) {
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                const opacity = 0.2 + Math.sin(time * 1.5 + ratioOffset) * 0.15;
+                const lineWidth = 1 + Math.sin(time * 3 + ratioOffset) * 2;
+                ctx.strokeStyle = `hsla(${hue}, 80%, 50%, ${opacity})`;
+                ctx.lineWidth = lineWidth;
+                ctx.stroke();
+                return;
+            }
+
+            // Large amplitude breathing for dragon curve folding
+            const breatheScale = 1 + Math.sin(time * 0.7 + ratioOffset) * 0.8;
+            const foldRatio = 0.5 + Math.sin(time * 2.2 + ratioOffset + depth * 0.5) * 0.6;
+            const twist = Math.sin(time * 1.8 + ratioOffset * 1.5) * 0.3;
+            
+            const midX = (x1 + x2) / 2 + (y2 - y1) * foldRatio * breatheScale + twist * (x2 - x1);
+            const midY = (y1 + y2) / 2 - (x2 - x1) * foldRatio * breatheScale + twist * (y2 - y1);
+
+            drawDragonCurve(ctx, x1, y1, midX, midY, depth - 1, hue + 15, time, ratioOffset);
+            drawDragonCurve(ctx, x2, y2, midX, midY, depth - 1, hue - 15, time, ratioOffset + 0.2);
+        }
+
+        // Breathing Spiral Fractal
+        function drawBreathingSpiral(ctx, centerX, centerY, maxRadius, time, offset) {
+            const breatheScale = 1 + Math.sin(time * 0.8 + offset) * 0.6;
+            const spiralTurns = 3 + Math.sin(time * 0.6 + offset) * 2;
+            
+            ctx.beginPath();
+            for (let angle = 0; angle < Math.PI * 2 * spiralTurns; angle += 0.1) {
+                const radius = (angle / (Math.PI * 2 * spiralTurns)) * maxRadius * breatheScale;
+                const wobble = Math.sin(angle * 4 + time * 2) * 5;
+                const x = centerX + Math.cos(angle + time) * (radius + wobble);
+                const y = centerY + Math.sin(angle + time) * (radius + wobble);
+                
+                if (angle === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
                 }
             }
+            
+            const hue = (time * 50 + offset * 60) % 360;
+            ctx.strokeStyle = `hsla(${hue}, 70%, 50%, ${0.3 + Math.sin(time * 2 + offset) * 0.2})`;
+            ctx.lineWidth = 1 + Math.sin(time * 3 + offset) * 1;
+            ctx.stroke();
+        }
 
-            addPulse(x, y) {
-                const mesh = this.pulseMeshes[this.pulses.length % config.maxPulses];
-                if (!mesh) return;
-
-                const vector = new THREE.Vector3(
-                    (x / window.innerWidth) * 2 - 1,
-                    -(y / window.innerHeight) * 2 + 1,
-                    0.5
-                );
-                vector.unproject(camera);
-                const dir = vector.sub(camera.position).normalize();
-                const distance = -camera.position.z / dir.z;
-                const pos = camera.position.clone().add(dir.multiplyScalar(distance));
-                
-                mesh.position.copy(pos);
-                mesh.visible = true;
-                mesh.material.uniforms.uTime.value = 0;
-                mesh.material.uniforms.uOpacity.value = 1;
-                
-                this.pulses.push({
-                    mesh,
-                    startTime: Date.now(),
-                    duration: 3000
-                });
-
-                this.updateCounter();
-            }
-
-            update(deltaTime) {
-                const now = Date.now();
-                
-                this.pulses = this.pulses.filter(pulse => {
-                    const age = now - pulse.startTime;
-                    const progress = age / pulse.duration;
+        // Julia Set Pattern
+        function drawJuliaPattern(ctx, centerX, centerY, size, time, offset) {
+            const breatheScale = 1 + Math.sin(time * 0.7 + offset) * 0.5;
+            const cReal = -0.7 + Math.sin(time * 0.5 + offset) * 0.1;
+            const cImag = 0.27 + Math.cos(time * 0.4 + offset) * 0.1;
+            
+            for (let px = -size; px <= size; px += 8) {
+                for (let py = -size; py <= size; py += 8) {
+                    let x = px / size * 2;
+                    let y = py / size * 2;
+                    let iterations = 0;
+                    const maxIterations = 20;
                     
-                    if (progress >= 1) {
-                        pulse.mesh.visible = false;
-                        return false;
+                    while (x * x + y * y < 4 && iterations < maxIterations) {
+                        const xTemp = x * x - y * y + cReal;
+                        y = 2 * x * y + cImag;
+                        x = xTemp;
+                        iterations++;
                     }
                     
-                    const scale = 1 + progress * 15;
-                    pulse.mesh.scale.set(scale, scale, scale);
-                    pulse.mesh.material.uniforms.uTime.value = progress * 10;
-                    pulse.mesh.material.uniforms.uOpacity.value = (1 - progress) * 0.8;
-                    
-                    return true;
-                });
-
-                if (config.autoPulse && now - this.lastAutoPulse > 500) {
-                    const x = Math.random() * window.innerWidth;
-                    const y = Math.random() * window.innerHeight;
-                    this.addPulse(x, y);
-                    this.lastAutoPulse = now;
+                    if (iterations < maxIterations) {
+                        const hue = (iterations * 15 + time * 40 + offset * 45) % 360;
+                        const opacity = (0.1 + Math.sin(time * 1.5 + offset + iterations * 0.5) * 0.1) * breatheScale;
+                        ctx.fillStyle = `hsla(${hue}, 70%, 50%, ${opacity})`;
+                        ctx.fillRect(centerX + px * breatheScale, centerY + py * breatheScale, 4, 4);
+                    }
                 }
-
-                this.updateCounter();
-            }
-
-            clear() {
-                this.pulses.forEach(pulse => {
-                    pulse.mesh.visible = false;
-                });
-                this.pulses = [];
-                this.updateCounter();
-            }
-
-            updateCounter() {
-                document.getElementById('pulseCount').textContent = this.pulses.length;
             }
         }
 
-        const pulseSystem = new PulseSystem();
-        const clock = new THREE.Clock();
-
-        // Event listeners
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('.controls') || e.target.closest('nav') || e.target.closest('main') || e.target.closest('footer')) return;
-            pulseSystem.addPulse(e.clientX, e.clientY);
-        });
-
-        document.addEventListener('touchstart', (e) => {
-            if (e.target.closest('.controls') || e.target.closest('nav') || e.target.closest('main') || e.target.closest('footer')) return;
-            e.preventDefault();
-            if (e.touches.length > 0) {
-                pulseSystem.addPulse(e.touches[0].clientX, e.touches[0].clientY);
+        // Branching Fractal (Tree-like)
+        function drawBranchingFractal(ctx, x, y, length, time, offset) {
+            const breatheScale = 1 + Math.sin(time * 0.9 + offset) * 0.4;
+            const angleVariation = Math.sin(time * 1.2 + offset) * 0.3;
+            
+            function drawBranch(x, y, length, angle, depth) {
+                if (depth === 0) return;
+                
+                const endX = x + Math.cos(angle) * length * breatheScale;
+                const endY = y + Math.sin(angle) * length * breatheScale;
+                
+                const hue = (120 + depth * 30 + time * 30 + offset * 60) % 360;
+                const opacity = 0.2 + Math.sin(time * 2 + offset + depth) * 0.1;
+                ctx.strokeStyle = `hsla(${hue}, 60%, 50%, ${opacity})`;
+                ctx.lineWidth = depth * 0.8;
+                
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+                
+                const branchAngle = Math.PI / 6 + angleVariation;
+                drawBranch(endX, endY, length * 0.7, angle - branchAngle, depth - 1);
+                drawBranch(endX, endY, length * 0.7, angle + branchAngle, depth - 1);
             }
-        }, { passive: false });
-
-        document.getElementById('autoBtn').addEventListener('click', function() {
-            config.autoPulse = !config.autoPulse;
-            this.classList.toggle('active');
-            this.textContent = config.autoPulse ? 'Stop Auto' : 'Auto Pulse';
-        });
-
-        document.getElementById('trailBtn').addEventListener('click', function() {
-            config.trails = !config.trails;
-            this.classList.toggle('active');
-            renderer.autoClear = !config.trails;
-        });
-
-        document.getElementById('clearBtn').addEventListener('click', () => {
-            pulseSystem.clear();
-        });
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            composer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        function animate() {
-            requestAnimationFrame(animate);
             
-            const deltaTime = clock.getDelta();
-            
-            pulseSystem.update(deltaTime);
-            
-            bgParticles.rotation.y += 0.0002;
-            bgParticles.rotation.x += 0.0001;
-            
-            composer.render();
+            drawBranch(x, y, length, -Math.PI / 2, 6);
         }
 
-        animate();
+        // L-System Fractal
+        function drawLSystem(ctx, x, y, size, time, offset) {
+            const breatheScale = 1 + Math.sin(time * 1.1 + offset) * 0.3;
+            let currentX = x;
+            let currentY = y;
+            let angle = 0;
+            const stepSize = size * 0.1 * breatheScale;
+            
+            // Simple L-system rule: F+F-F-F+F
+            const sequence = "F+F-F-F+F";
+            
+            ctx.beginPath();
+            ctx.moveTo(currentX, currentY);
+            
+            for (let i = 0; i < sequence.length; i++) {
+                const char = sequence[i];
+                const hue = (i * 30 + time * 50 + offset * 40) % 360;
+                const opacity = 0.15 + Math.sin(time * 1.8 + offset + i * 0.8) * 0.1;
+                ctx.strokeStyle = `hsla(${hue}, 65%, 55%, ${opacity})`;
+                ctx.lineWidth = 1 + Math.sin(time * 2.5 + offset + i * 0.5) * 0.5;
+                
+                if (char === 'F') {
+                    const nextX = currentX + Math.cos(angle) * stepSize;
+                    const nextY = currentY + Math.sin(angle) * stepSize;
+                    ctx.lineTo(nextX, nextY);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(nextX, nextY);
+                    currentX = nextX;
+                    currentY = nextY;
+                } else if (char === '+') {
+                    angle += Math.PI / 2 + Math.sin(time * 1.5 + offset) * 0.2;
+                } else if (char === '-') {
+                    angle -= Math.PI / 2 + Math.cos(time * 1.5 + offset) * 0.2;
+                }
+            }
+        }
+
+        // Apollonian Gasket
+        function drawApollonianGasket(ctx, centerX, centerY, radius, time, offset) {
+            const breatheScale = 1 + Math.sin(time * 0.6 + offset) * 0.5;
+            
+            function drawCircle(x, y, r, depth) {
+                if (depth === 0 || r < 2) return;
+                
+                const hue = (depth * 40 + time * 45 + offset * 50) % 360;
+                const opacity = 0.1 + Math.sin(time * 1.3 + offset + depth * 0.7) * 0.08;
+                ctx.strokeStyle = `hsla(${hue}, 70%, 50%, ${opacity})`;
+                ctx.lineWidth = 0.5 + Math.sin(time * 2 + offset + depth) * 0.3;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, r * breatheScale, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                // Create smaller circles inside
+                const numCircles = 3;
+                for (let i = 0; i < numCircles; i++) {
+                    const angle = (i * 2 * Math.PI / numCircles) + time * 0.5;
+                    const newRadius = r * 0.3;
+                    const newX = x + Math.cos(angle) * r * 0.5;
+                    const newY = y + Math.sin(angle) * r * 0.5;
+                    drawCircle(newX, newY, newRadius, depth - 1);
+                }
+            }
+            
+            drawCircle(centerX, centerY, radius, 4);
+        }
+
+        function animateFractal() {
+            // Create trail effect
+            ctx.fillStyle = 'rgba(10, 10, 10, 0.08)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            const time = Date.now() * 0.0003;
+            
+            // Draw multiple Sierpinski Triangles with sinusoidal size and depth changes
+            const baseSize = Math.min(canvas.width, canvas.height);
+            
+            // Triangle 1: Varying size and depth
+            const size1 = baseSize * (0.05 + Math.sin(time * 0.8) * 0.12);
+            const depth1 = Math.floor(2 + Math.sin(time * 0.6) * 2);
+            drawSierpinskiTriangle(ctx, canvas.width * 0.1, canvas.height * 0.8, size1, Math.max(0, depth1), time, 0);
+            
+            // Triangle 2: Different phase for variety
+            const size2 = baseSize * (0.08 + Math.sin(time * 1.2 + Math.PI/3) * 0.10);
+            const depth2 = Math.floor(1.5 + Math.sin(time * 0.9 + Math.PI/4) * 1.5);
+            drawSierpinskiTriangle(ctx, canvas.width * 0.7, canvas.height * 0.6, size2, Math.max(0, depth2), time, Math.PI/3);
+            
+            // Triangle 3: Slower, larger variations
+            const size3 = baseSize * (0.06 + Math.sin(time * 0.5 + 2*Math.PI/3) * 0.15);
+            const depth3 = Math.floor(1 + Math.sin(time * 0.4) * 2.5);
+            drawSierpinskiTriangle(ctx, canvas.width * 0.4, canvas.height * 0.3, size3, Math.max(0, depth3), time, 2*Math.PI/3);
+            
+            // Draw Koch Snowflakes with large amplitude breathing
+            const kochBaseSize = Math.min(canvas.width, canvas.height);
+            drawKochSnowflake(ctx, canvas.width * 0.8, canvas.height * 0.2, kochBaseSize * 0.08, 3, time, 0);
+            drawKochSnowflake(ctx, canvas.width * 0.2, canvas.height * 0.15, kochBaseSize * 0.06, 2, time, Math.PI/4);
+            drawKochSnowflake(ctx, canvas.width * 0.6, canvas.height * 0.85, kochBaseSize * 0.1, 3, time, Math.PI/2);
+            
+            // Draw Dragon Curves with large amplitude breathing
+            const dragonHue = 300 + Math.sin(time * 0.5) * 80;
+            const dragonBreathe = 1 + Math.sin(time * 0.4) * 0.4;
+            drawDragonCurve(ctx, canvas.width * 0.3 * dragonBreathe, canvas.height * 0.7, canvas.width * 0.5, canvas.height * 0.5 * dragonBreathe, 8, dragonHue, time, 0);
+            drawDragonCurve(ctx, canvas.width * 0.7, canvas.height * 0.3 * dragonBreathe, canvas.width * 0.9, canvas.height * 0.6, 6, dragonHue + 120, time, Math.PI/3);
+            
+            // Add floating particles with large amplitude breathing
+            for (let i = 0; i < 25; i++) {
+                const breatheX = 1 + Math.sin(time * 0.6 + i * 0.3) * 0.5;
+                const breatheY = 1 + Math.sin(time * 0.5 + i * 0.4) * 0.5;
+                const x = ((Math.sin(time * 0.4 + i * 0.8) + 1) * canvas.width / 2) * breatheX;
+                const y = ((Math.cos(time * 0.3 + i * 1.2) + 1) * canvas.height / 2) * breatheY;
+                const radiusBreathe = 1 + Math.sin(time * 1.8 + i) * 1.2;
+                const radius = 1 + radiusBreathe * 3;
+                const hue = (time * 60 + i * 25) % 360;
+                const opacity = 0.05 + Math.sin(time * 2 + i) * 0.15;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, Math.PI * 2);
+                ctx.fillStyle = `hsla(${hue}, 85%, 60%, ${opacity})`;
+                ctx.fill();
+            }
+            
+            // Draw recursive spirals with breathing
+            drawBreathingSpiral(ctx, canvas.width * 0.15, canvas.height * 0.25, 50, time, 0);
+            drawBreathingSpiral(ctx, canvas.width * 0.85, canvas.height * 0.75, 40, time, Math.PI/2);
+            drawBreathingSpiral(ctx, canvas.width * 0.5, canvas.height * 0.9, 45, time, Math.PI);
+            
+            // Draw Julia set patterns
+            drawJuliaPattern(ctx, canvas.width * 0.25, canvas.height * 0.4, 60, time, 0);
+            drawJuliaPattern(ctx, canvas.width * 0.75, canvas.height * 0.6, 50, time, Math.PI/3);
+            
+            // Draw branching fractals (tree-like structures)
+            drawBranchingFractal(ctx, canvas.width * 0.1, canvas.height * 0.5, 80, time, 0);
+            drawBranchingFractal(ctx, canvas.width * 0.9, canvas.height * 0.4, 70, time, Math.PI);
+            
+            // Draw L-system fractals
+            drawLSystem(ctx, canvas.width * 0.3, canvas.height * 0.1, 40, time, 0);
+            drawLSystem(ctx, canvas.width * 0.7, canvas.height * 0.9, 35, time, Math.PI/4);
+            
+            // Draw Apollonian gaskets
+            drawApollonianGasket(ctx, canvas.width * 0.6, canvas.height * 0.2, 30, time, 0);
+            
+            requestAnimationFrame(animateFractal);
+        }
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+            navLinks.style.flexDirection = 'column';
+            navLinks.style.position = 'absolute';
+            navLinks.style.top = '100%';
+            navLinks.style.left = '0';
+            navLinks.style.right = '0';
+            navLinks.style.background = 'rgba(10, 10, 10, 0.95)';
+            navLinks.style.padding = '20px';
+        }
+
+        // Initialize everything
+        window.addEventListener('load', () => {
+            resizeCanvas();
+            animateFractal();
+        });
+
+        window.addEventListener('resize', resizeCanvas);
     </script>
 </body>
 </html>
