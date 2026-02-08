@@ -349,6 +349,12 @@
 <body>
     <!-- Fractal Background -->
     <canvas id="fractalCanvas"></canvas>
+    
+    <!-- Background Music -->
+    <audio id="background-music" loop>
+        <source src="music/Ragnarok_rav.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
 
     <!-- Navigation -->
     <nav class="nav">
@@ -370,6 +376,20 @@
             </section>
 
             <section class="updates-timeline">
+                <div class="update-item">
+                    <div class="update-date">February 8, 2026</div>
+                    <h3>UCSF Collaboration Authorized</h3>
+                    <p>We received permission from Brian Shoichet at UCSF, who has worked with Professor Brian Roth (the scientist who discovered new psychedelic compounds and recently identified around 100 different structures). We are authorized to incorporate the structures they discovered into our art piece.</p>
+                    <img src="images/docked_compounds.jpg" alt="Docked Compounds Reference" style="max-width: 100%; height: auto; border-radius: 10px; margin: 1rem 0;">
+                    <p>This collaboration opens new possibilities for integrating cutting-edge scientific research into our artistic exploration of mental illness and consciousness.</p>
+                    <div class="update-tags">
+                        <span class="tag">Collaboration</span>
+                        <span class="tag">UCSF</span>
+                        <span class="tag">Research</span>
+                        <span class="tag">Science</span>
+                    </div>
+                </div>
+
                 <div class="update-item">
                     <div class="update-date">February 2026</div>
                     <h3>Build Lead Confirmed</h3>
@@ -447,6 +467,48 @@
     </div>
 
     <script>
+        // Persistent Music Across Pages
+        const audio = document.getElementById('background-music');
+        let musicStarted = false;
+
+        // Function to start music
+        function startMusic() {
+            if (!musicStarted) {
+                audio.play().catch(e => console.log('Autoplay blocked:', e));
+                musicStarted = true;
+                // Store music state and current time
+                localStorage.setItem('musicPlaying', 'true');
+                localStorage.setItem('musicStartTime', Date.now().toString());
+            }
+        }
+
+        // Function to restore music state
+        function restoreMusicState() {
+            const wasPlaying = localStorage.getItem('musicPlaying');
+            const startTime = localStorage.getItem('musicStartTime');
+            
+            if (wasPlaying === 'true' && startTime) {
+                const elapsed = (Date.now() - parseInt(startTime)) / 1000;
+                const musicDuration = 180; // Approximate duration in seconds
+                const currentTime = elapsed % musicDuration;
+                
+                audio.currentTime = currentTime;
+                audio.play().catch(e => console.log('Autoplay blocked on restore:', e));
+                musicStarted = true;
+            }
+        }
+
+        // Save music state before page unload
+        window.addEventListener('beforeunload', () => {
+            if (musicStarted && !audio.paused) {
+                localStorage.setItem('musicPlaying', 'true');
+                localStorage.setItem('musicStartTime', Date.now().toString());
+                localStorage.setItem('musicCurrentTime', audio.currentTime.toString());
+            } else {
+                localStorage.setItem('musicPlaying', 'false');
+            }
+        });
+
         // Enhanced Fractal Background Animation with Multiple Fractal Shapes
         const canvas = document.getElementById('fractalCanvas');
         const ctx = canvas.getContext('2d');
@@ -837,6 +899,7 @@
         window.addEventListener('load', () => {
             resizeCanvas();
             animateFractal();
+            restoreMusicState();
         });
 
         window.addEventListener('resize', resizeCanvas);
