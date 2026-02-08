@@ -117,9 +117,9 @@
 
         /* Hero Section */
         .hero {
-            text-align: center;
-            padding: 6rem 2rem;
-            margin-bottom: 4rem;
+            text-align: left;
+            padding: 3rem 1rem;
+            margin-bottom: 2rem;
             position: relative;
         }
 
@@ -328,13 +328,15 @@
 
         /* Pentagon Animation Container */
         .pentagon-container {
-            position: relative;
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
             width: 500px;
             height: 500px;
             flex-shrink: 0;
             z-index: 100;
             pointer-events: none;
-            margin-top: 50px;
         }
 
         .pentagon-viz {
@@ -377,7 +379,6 @@
 
             main {
                 padding: 100px 20px 20px;
-                flex-direction: column;
             }
 
             .hero {
@@ -398,17 +399,18 @@
                 height: 300px;
                 right: 10px;
             }
-
-            .content-column {
-                max-width: 100%;
-                padding-right: 0;
-            }
         }
     </style>
 </head>
 <body>
     <!-- Fractal Background -->
     <canvas id="fractalCanvas"></canvas>
+    
+    <!-- Background Music -->
+    <audio id="background-music" loop>
+        <source src="music/Ragnarok_rav.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
 
     <!-- Navigation -->
     <nav class="nav">
@@ -935,6 +937,42 @@
         });
 
         window.addEventListener('resize', resizeCanvas);
+        
+        // Auto-play music functionality
+        const audio = document.getElementById('background-music');
+        let musicStarted = false;
+
+        // Function to start music
+        function startMusic() {
+            if (!musicStarted) {
+                audio.play().catch(e => console.log('Autoplay blocked:', e));
+                musicStarted = true;
+            }
+        }
+
+        // Start music on first user interaction (click, touch, keypress)
+        document.addEventListener('click', function playMusicOnce(e) {
+            if (!e.target.closest('.nav-links') && !e.target.closest('nav')) {
+                startMusic();
+                document.removeEventListener('click', playMusicOnce);
+            }
+        }, { once: true });
+
+        // Also start music on touchstart for mobile
+        document.addEventListener('touchstart', function playMusicOnceTouch(e) {
+            if (!e.target.closest('.nav-links') && !e.target.closest('nav')) {
+                startMusic();
+                document.removeEventListener('touchstart', playMusicOnceTouch);
+            }
+        }, { once: true });
+
+        // Start music on any keypress
+        document.addEventListener('keydown', function playMusicOnceKey(e) {
+            if (!musicStarted && e.key.length === 1) {
+                startMusic();
+                document.removeEventListener('keydown', playMusicOnceKey);
+            }
+        }, { once: true });
     </script>
 </body>
 </html>
