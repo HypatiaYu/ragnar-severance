@@ -98,11 +98,21 @@
         }
 
         main {
-            max-width: 1200px;
-            margin: 0 auto;
+            max-width: 100%;
+            margin: 0;
             padding: 150px 50px 50px;
             position: relative;
             z-index: 10;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 50px;
+        }
+
+        .content-column {
+            flex: 1;
+            max-width: calc(100% - 550px);
+            padding-right: 20px;
         }
 
         /* Hero Section */
@@ -316,6 +326,39 @@
             z-index: 10;
         }
 
+        /* Pentagon Animation Container */
+        .pentagon-container {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            flex-shrink: 0;
+            z-index: 100;
+            pointer-events: none;
+            margin-top: 50px;
+        }
+
+        .pentagon-viz {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.3);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 70%);
+        }
+
+        .fractal-element {
+            position: absolute;
+            border-style: solid;
+            animation: pentagonRotate 8s linear infinite;
+            transition: transform 0.3s ease;
+        }
+
+        @keyframes pentagonRotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
         /* Mobile Responsive */
         .mobile-menu {
             display: none;
@@ -334,6 +377,7 @@
 
             main {
                 padding: 100px 20px 20px;
+                flex-direction: column;
             }
 
             .hero {
@@ -347,6 +391,17 @@
 
             .preview-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .pentagon-container {
+                width: 300px;
+                height: 300px;
+                right: 10px;
+            }
+
+            .content-column {
+                max-width: 100%;
+                padding-right: 0;
             }
         }
     </style>
@@ -369,41 +424,50 @@
     <!-- Main Content -->
     <div class="overlay">
         <main>
-            <section class="hero">
-                <h1>Ragnarök: the Severance of Body and Mind</h1>
-                <p>A visual metaphor for the fracture between body and mind during mental illness</p>
-            </section>
+            <div class="content-column">
+                <section class="hero">
+                    <h1>Ragnarök: the Severance of Body and Mind</h1>
+                    <p>A visual metaphor for the fracture between body and mind during mental illness</p>
+                </section>
 
-            <section class="overview">
-                <h2>Project Overview</h2>
-                <p>by Dr. Helen Yu • Mona Camp • Berkeley, CA</p>
-                <p>Ragnarök: the Severance of Body and Mind is a visual metaphor for the fracture between body and mind during mental illness. Nine concentric pentagons form a fractal spiral of the Nine Realms, with the brain as Asgard, symbolizing neural collapse, rupture, and the possibility of renewal.</p>
-                <p style="text-align: center; margin-top: 2rem;">
-                    <a href="https://crowdfundr.com/52eezf?ref=sh_2Ed8We_ab_296vYFGMujN296vYFGMujN" target="_blank" class="crowdfund-link">
-                        Support Our Project on Crowdfundr
-                    </a>
-                </p>
-                <div class="preview-grid">
-                    <div class="preview-card">
-                        <h3>Fractal Structure</h3>
-                        <p>Five concentric pentagonal forms built from interlocking triangular fractals</p>
+                <section class="overview">
+                    <h2>Project Overview</h2>
+                    <p>by Dr. Helen Yu • Mona Camp • Berkeley, CA</p>
+                    <p>Ragnarök: the Severance of Body and Mind is a visual metaphor for the fracture between body and mind during mental illness. Nine concentric pentagons form a fractal spiral of the Nine Realms, with the brain as Asgard, symbolizing neural collapse, rupture, and the possibility of renewal.</p>
+                    <p style="text-align: center; margin-top: 2rem;">
+                        <a href="https://crowdfundr.com/52eezf?ref=sh_2Ed8We_ab_296vYFGMujN296vYFGMujN" target="_blank" class="crowdfund-link">
+                            Support Our Project on Crowdfundr
+                        </a>
+                    </p>
+                    <div class="preview-grid">
+                        <div class="preview-card">
+                            <h3>Fractal Structure</h3>
+                            <p>Five concentric pentagonal forms built from interlocking triangular fractals</p>
+                        </div>
+                        <div class="preview-card">
+                            <h3>Spiral Pathway</h3>
+                            <p>Continuous spiral allows participants to move toward the central core</p>
+                        </div>
+                        <div class="preview-card">
+                            <h3>Neural Metaphor</h3>
+                            <p>Reimagines the human nervous system as an axis mundi</p>
+                        </div>
                     </div>
-                    <div class="preview-card">
-                        <h3>Spiral Pathway</h3>
-                        <p>Continuous spiral allows participants to move toward the central core</p>
-                    </div>
-                    <div class="preview-card">
-                        <h3>Neural Metaphor</h3>
-                        <p>Reimagines the human nervous system as an axis mundi</p>
-                    </div>
+                </section>
+
+                <section class="highlights">
+                    <h2>Physical Description</h2>
+                    <p>The sculpture is composed of five concentric pentagonal forms that rise in a continuous spiral, reaching approximately 10 feet at the highest corner. Each pentagonal face is constructed entirely from triangular elements, with faces defined by the edges of those triangles rather than flat planes.</p>
+                    <p>Within each triangle, smaller triangular cutouts are arranged to create a fractal pattern, repeating the triangular geometry at multiple scales. One edge of each pentagon is intentionally left open, and these openings align to form a spiraling pathway that leads inward through the structure.</p>
+                </section>
+            </div>
+
+            <!-- Pentagon Animation -->
+            <div class="pentagon-container">
+                <div class="pentagon-viz" id="pentagonViz">
+                    <!-- Pentagon elements will be generated by JavaScript -->
                 </div>
-            </section>
-
-            <section class="highlights">
-                <h2>Physical Description</h2>
-                <p>The sculpture is composed of five concentric pentagonal forms that rise in a continuous spiral, reaching approximately 10 feet at the highest corner. Each pentagonal face is constructed entirely from triangular elements, with faces defined by the edges of those triangles rather than flat planes.</p>
-                <p>Within each triangle, smaller triangular cutouts are arranged to create a fractal pattern, repeating the triangular geometry at multiple scales. One edge of each pentagon is intentionally left open, and these openings align to form a spiraling pathway that leads inward through the structure.</p>
-            </section>
+            </div>
         </main>
 
         <footer>
@@ -798,10 +862,76 @@
             navLinks.style.padding = '20px';
         }
 
+        // Pentagon Animation
+        function createPentagonViz() {
+            const viz = document.getElementById('pentagonViz');
+            const elements = [];
+            const pentagons = [];
+            
+            for (let i = 0; i < 9; i++) {
+                const element = document.createElement('div');
+                element.className = 'fractal-element';
+                
+                // Calculate pentagon size with ratio for nested pentagons
+                const pentagonRatio = 0.851;
+                const size = 460 * Math.pow(pentagonRatio, i);
+                
+                // Glowing white color scheme with subtle variations
+                const opacity = 1.0; // Completely opaque
+                const glowIntensity = 40 - (i * 2); // Much stronger glow
+                const borderWidth = 25 - (i * 0.3); // Even thicker border starting at 25px
+                const color = `rgba(255, 255, 255, ${opacity})`;
+                const shadowColor = `rgba(255, 255, 255, ${glowIntensity / 30})`;
+                
+                element.style.width = size + 'px';
+                element.style.height = size + 'px';
+                element.style.borderColor = color;
+                element.style.backgroundColor = 'transparent';
+                element.style.left = '50%';
+                element.style.top = '50%';
+                element.style.borderWidth = borderWidth + 'px'; // Set thick border width
+                
+                // Enhanced multi-layer glow effect
+                element.style.boxShadow = `
+                    0 0 ${glowIntensity}px ${shadowColor}, 
+                    0 0 ${glowIntensity/2}px rgba(255, 255, 255, 0.8),
+                    0 0 ${glowIntensity/4}px rgba(255, 255, 255, 0.9),
+                    inset 0 0 ${glowIntensity/2}px ${shadowColor},
+                    inset 0 0 ${glowIntensity/4}px rgba(255, 255, 255, 0.7)
+                `;
+                
+                // Add additional outer glow using filter
+                element.style.filter = `drop-shadow(0 0 ${glowIntensity/3}px rgba(255, 255, 255, 0.6))`;
+                
+                // Create pentagon shape using clip-path
+                element.style.clipPath = 'polygon(50% 0%, 95% 35%, 80% 90%, 20% 90%, 5% 35%)';
+                
+                // Store pentagon data
+                pentagons.push({
+                    element: element,
+                    size: size,
+                    index: i,
+                    rotation: (i * 36) + (i * 0.5)
+                });
+                
+                // Calculate rotation so each corner of inner pentagon touches the edge of outer pentagon
+                const rotationAngle = i * 36;
+                element.style.transform = `translate(-50%, -50%) rotate(${rotationAngle}deg)`;
+                
+                // Staggered animation timing for each pentagon
+                element.style.animationDelay = (i * 0.3) + 's';
+                element.style.animationDuration = (8 + i * 1.5) + 's';
+                
+                viz.appendChild(element);
+                elements.push(element);
+            }
+        }
+
         // Initialize everything
         window.addEventListener('load', () => {
             resizeCanvas();
             animateFractal();
+            createPentagonViz();
         });
 
         window.addEventListener('resize', resizeCanvas);
